@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Monaco Cabinet · Sales Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #faf9f7;
+      --surface: #ffffff;
+      --border: #e0dbd3;
+      --border-hover: #b8a98e;
+      --text: #1a1714;
+      --muted: #9c9188;
+      --accent: #8b7355;
+      --accent-light: rgba(139, 115, 85, 0.08);
+      --accent-client: #5c4a2a;
+      --accent-eval: #2a3d4a;
+      --shadow: rgba(26, 23, 20, 0.06);
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
+      padding: 32px 24px;
+    }
+
+    /* Subtle background texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(ellipse at 20% 20%, rgba(139,115,85,0.04) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 80%, rgba(44,61,74,0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Top and bottom decorative lines */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      z-index: 10;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+      width: 100%;
+      max-width: 520px;
+    }
+
+    /* Logo area */
+    .logo-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .logo-img {
+      width: 200px;
+      height: auto;
+      opacity: 0.9;
+    }
+
+    .logo-divider {
+      width: 48px;
+      height: 1px;
+      background: var(--border-hover);
+    }
+
+    .portal-label {
+      font-family: 'Jost', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Cards */
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 26px 28px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 2px 12px var(--shadow);
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Left accent bar */
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      transition: opacity 0.25s ease;
+      opacity: 0;
+    }
+    .card.client::before { background: var(--accent-client); }
+    .card.eval::before   { background: var(--accent-eval); }
+
+    .card:hover {
+      border-color: var(--border-hover);
+      box-shadow: 0 6px 24px rgba(26,23,20,0.1);
+      transform: translateY(-2px);
+    }
+    .card:hover::before { opacity: 1; }
+    .card:active { transform: translateY(0); box-shadow: 0 2px 8px var(--shadow); }
+
+    .card-icon-wrap {
+      width: 48px; height: 48px;
+      border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 22px;
+    }
+    .card.client .card-icon-wrap { background: rgba(92,74,42,0.07); }
+    .card.eval   .card-icon-wrap { background: rgba(42,61,74,0.07); }
+
+    .card-body { flex: 1; }
+
+    .card-body h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      margin-bottom: 4px;
+    }
+    .card.client .card-body h2 { color: var(--accent-client); }
+    .card.eval   .card-body h2 { color: var(--accent-eval); }
+
+    .card-body p {
+      font-size: 12.5px;
+      color: var(--muted);
+      font-weight: 300;
+      line-height: 1.5;
+      letter-spacing: 0.01em;
+    }
+
+    .card-chevron {
+      font-size: 18px;
+      color: var(--border);
+      transition: color 0.25s, transform 0.25s;
+      flex-shrink: 0;
+    }
+    .card.client:hover .card-chevron { color: var(--accent-client); transform: translateX(3px); }
+    .card.eval:hover   .card-chevron { color: var(--accent-eval);   transform: translateX(3px); }
+
+    /* Footer */
+    .footer {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+    .footer-line { flex: 1; height: 1px; background: var(--border); }
+    .footer-text {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--border-hover);
+      white-space: nowrap;
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Toast notification ── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--text);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.03em;
+      padding: 12px 22px;
+      border-radius: 4px;
+      box-shadow: 0 8px 24px rgba(26,23,20,0.18);
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 200;
+      white-space: nowrap;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+
+    <!-- Logo -->
+    <div class="logo-area">
+      <img class="logo-img" src="monaco.jpg" alt="Monaco"> 
+      <div class="logo-divider"></div>
+      <span class="portal-label">Sales Portal</span>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards">
+
+      <div class="card client" onclick="openForm('client')">
+        <div class="card-icon-wrap">🧾</div>
+        <div class="card-body">
+          <h2>New Client</h2>
+          <p>Register a new client's contact information.</p>
+        </div>
+        <div class="card-chevron">›</div>
+      </div>
+
+      <div class="card eval" onclick="openForm('eval')">
+        <div class="card-icon-wrap">📋</div>
+        <div class="card-body">
+          <h2>Client Evaluation</h2>
+          <p>Submit your assessment after meeting a client.</p>
+        </div>
+        <div class="card-chevron">›</div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer" style="width:100%">
+      <div class="footer-line"></div>
+      <span class="footer-text">Confidential · Internal Use Only</span>
+      <div class="footer-line"></div>
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const forms = {
+      client: {
+        url: 'https://xmwo3i.app.n8n.cloud/form/5a550bbf-3a3d-4d76-82c9-36d4ce662d6e',
+        toast: '📋 New Client form opened in a new tab'
+      },
+      eval: {
+        url: 'https://xmwo3i.app.n8n.cloud/form/faed5144-8df5-4fe5-a860-553613731801',
+        toast: '📊 Client Evaluation form opened in a new tab'
+      }
+    };
+
+    function openForm(type) {
+      const f = forms[type];
+      window.open(f.url, '_blank');
+      showToast(f.toast);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+  </script>
+
+</body>
+</html>
